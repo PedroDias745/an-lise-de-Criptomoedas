@@ -3,7 +3,6 @@ import requests
 import pandas as pd
 import plotly.graph_objects as go
 
-# Função para buscar dados da Binance
 def dados_historicos_binance(symbol='BTCUSDT', interval='1d', limit=30):
     url = 'https://api.binance.com/api/v3/klines'
     params = {
@@ -25,10 +24,8 @@ def dados_historicos_binance(symbol='BTCUSDT', interval='1d', limit=30):
     df = df[['data', 'preco']]
     return df
 
-# configura o título
 st.set_page_config(page_title="📊 Dashboard Cripto", layout="wide")
 
-# Cria elementos na barra lateral
 st.sidebar.markdown("## ⚙️ Configurações")
 coin = st.sidebar.selectbox("Escolha uma criptomoeda:", 
     ['bitcoin', 'ethereum', 'ripple', 'dogecoin', 'litecoin', 'cardano', 
@@ -37,7 +34,6 @@ coin = st.sidebar.selectbox("Escolha uma criptomoeda:",
      'algorand', 'stellar', 'bitcoin-cash'], key="coin_select")
 days = st.sidebar.slider("Dias de histórico:", 1, 365, 30, key="days_slider")
 
-# Mapa para símbolos da Binance
 coin_symbol_map = {
     'bitcoin': 'BTCUSDT',
     'ethereum': 'ETHUSDT',
@@ -63,22 +59,18 @@ coin_symbol_map = {
 
 symbol = coin_symbol_map.get(coin, 'BTCUSDT')
 
-# Cabeçalho e busca de dados
 st.markdown(f"## 📈 {coin.capitalize()} ({symbol}) - Últimos {days} dias")
 
 data = dados_historicos_binance(symbol, '1d', days)
 
-# Cálculo de Estatísticas
 preco_recente = data['preco'].iloc[-1]
 primeiro_preco = data['preco'].iloc[0]
 variacao_percentual = ((preco_recente - primeiro_preco) / primeiro_preco) * 100
 
-# mostrar o que aparecer no grafico
 col1, col2 = st.columns(2)
 col1.metric(label="💰 Preço Atual (USD)", value=f"${preco_recente:,.2f}")
 col2.metric(label="📊 Variação %", value=f"{variacao_percentual:.2f}%", delta=f"{variacao_percentual:.2f}%")
 
-# criando o grafico
 st.markdown("### 📉 Evolução de Preço")
 fig = go.Figure()
 fig.add_trace(go.Scatter(
@@ -96,11 +88,9 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-# criando a tabela 
 with st.expander("📋 Ver tabela de dados"):
     st.dataframe(data.style.format({'preco': '${:,.4f}'}), use_container_width=True)
 
-# precisei de ajuda nessa parte 
 st.markdown("""
 <style>
     .stMetric {
